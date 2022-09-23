@@ -13,7 +13,7 @@ import com.demoshop.entities.User;
 import com.demoshop.services.UserService;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 public class UserController {
 
     @Autowired
