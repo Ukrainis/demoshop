@@ -58,8 +58,9 @@ public class ApplicationSecurityConfig {
         http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.authorizeRequests()
-                .antMatchers("/api/auth/login", "/api/users/registerUser").permitAll()
+                .antMatchers("/api/auth/login", "/api/users/registerUser", "/h2-console/**").permitAll()
                 .anyRequest().authenticated();
+        http.headers().frameOptions().sameOrigin();
 
         http.exceptionHandling()
                 .authenticationEntryPoint(
