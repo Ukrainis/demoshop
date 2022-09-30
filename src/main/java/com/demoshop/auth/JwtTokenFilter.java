@@ -16,7 +16,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.demoshop.entities.Role;
 import com.demoshop.entities.User;
+
+import io.jsonwebtoken.Claims;
 
 @Component
 public class JwtTokenFilter extends OncePerRequestFilter {
@@ -60,7 +63,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         UserDetails userDetails = getUserDetails(token);
 
         UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null,
-                null);
+                userDetails.getAuthorities());
 
         authentication.setDetails(
                 new WebAuthenticationDetailsSource().buildDetails(request));
@@ -70,7 +73,18 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
     private UserDetails getUserDetails(String token) {
         User userDetails = new User();
-        String[] jwtSubject = jwtTokenUtil.getSubject(token).split(",");
+        Claims claims = jwtTokenUtil.parseClaims(token);
+        String subject = (String) claims.get(Claims.SUBJECT);
+        String roles = (String) claims.get("roles");
+
+        roles = roles.replace("[", "");
+        String[] roleNames = roles.split(",");
+
+        for (String role : roleNames) {
+            userDetails.addRole(new Role(role));
+        }
+
+        String[] jwtSubject = subject.split(",");
 
         userDetails.setId(Integer.parseInt(jwtSubject[0]));
         userDetails.setEmail(jwtSubject[1]);

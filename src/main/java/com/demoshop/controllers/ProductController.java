@@ -3,6 +3,7 @@ package com.demoshop.controllers;
 import java.net.URI;
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ public class ProductController {
     private ProductService productService;
 
     @PostMapping(path = "/addProduct")
+    @RolesAllowed("ROLE_EDITOR")
     public ResponseEntity<Product> addProductEndpoint(@RequestBody @Valid Product product) {
         Product savedProduct = productService.createProduct(product);
         URI newUri = URI.create(String.format("/products/%d", savedProduct.getId()));
@@ -31,6 +33,7 @@ public class ProductController {
     }
 
     @GetMapping(path = "/getAllProducts")
+    @RolesAllowed({ "ROLE_EDITOR", "ROLE_EDITOR" })
     public ResponseEntity<List<Product>> returnAllProductsEndpoint() {
         List<Product> listOfProducts = productService.getAllProducts();
         return ResponseEntity.ok(listOfProducts);
